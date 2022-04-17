@@ -26,6 +26,8 @@ interface IProps {
   collapse?: boolean;
   /** 收起触发的临界点 */
   collapseThreshold?: 0.3 | 0.5 | 0.7;
+  onCollapse?: () => void;
+  onExpand?: () => void;
   onDragStart?: () => void;
   onDragEnd?: () => void;
   className?: string;
@@ -98,36 +100,71 @@ export default function SplitPane(props: IProps) {
     }
 
     // deal with minSize situation
-    if (primarySize < minSize0) {
-      primarySize = Math.max(minSize0, primarySize);
-    } else if (secondarySize < minSize1) {
-      primarySize = Math.min(
-        primarySize,
-        splitPaneSize - minSize1 - resizerSize
-      );
+    if (isFixed.current) {
+      const absOffset = Math.abs(offset);
+
+      // expand left or top
+      if (offset > 0) {
+        if (absOffset >= minSize0) {
+          isFixed.current = false;
+          return minSize0;
+        }
+      } else {
+        if (absOffset >= minSize1) {
+          isFixed.current = false;
+          return minSize1;
+        }
+      }
+
+      return paneSize;
+    } else {
+      if (primarySize < minSize0) {
+        primarySize = Math.max(minSize0, primarySize);
+      } else if (secondarySize < minSize1) {
+        primarySize = Math.min(
+          primarySize,
+          splitPaneSize - minSize1 - resizerSize
+        );
+      }
     }
 
     // deal with collapse situation
-    // if (collapse && (primarySize === minSize0 || secondarySize === minSize1)) {
-    //   const threshold0 = collapseThreshold * minSize0;
+    console.log(
+      '%c [ secondarySize ]-133',
+      'font-size:13px; background:pink; color:#bf2c9f;',
+      secondarySize
+    );
+    if (collapse && (primarySize <= minSize0 || secondarySize <= minSize1)) {
+      const threshold0 = collapseThreshold * minSize0;
 
-    //   const threshold1 = collapseThreshold * minSize1;
+      const threshold1 = collapseThreshold * minSize1;
 
-    //   const absOffset = Math.abs(offset);
+      const absOffset = Math.abs(offset);
+      console.log(offset);
 
-    //   // collapse left or top
-    //   if (offset < 0) {
-    //     if (absOffset >= threshold0 && !isFixed.current) {
-    //       primarySize = threshold0;
-    //       //   isFixed.current = true;
-    //     }
-    //   } else {
-    //     if (absOffset >= threshold1 && !isFixed.current) {
-    //       primarySize = splitPaneSize - threshold1 - resizerSize;
-    //       //   isFixed.current = true;
-    //     }
-    //   }
-    // }
+      // collapse left or top
+      if (offset < 0) {
+        if (absOffset >= threshold0 && !isFixed.current) {
+          primarySize = threshold0;
+          console.log(
+            '%c [ primarySize ]-122',
+            'font-size:13px; background:pink; color:#bf2c9f;',
+            primarySize
+          );
+          isFixed.current = true;
+        }
+      } else {
+        if (absOffset >= threshold1 && !isFixed.current) {
+          primarySize = splitPaneSize - threshold1 - resizerSize;
+          console.log(
+            '%c [ primarySize ]-128',
+            'font-size:13px; background:pink; color:#bf2c9f;',
+            primarySize
+          );
+          isFixed.current = true;
+        }
+      }
+    }
 
     // deal with expand situation
     if (isFixed.current) {
@@ -154,11 +191,7 @@ export default function SplitPane(props: IProps) {
   const handleMouseMove = useMemoFn((e: MouseEvent) => {
     e.preventDefault();
     const tempSize = getPaneSize({ mousePos: e });
-    console.log(
-      '%c [ tempSize ]-160',
-      'font-size:13px; background:pink; color:#bf2c9f;',
-      tempSize
-    );
+
     setPaneSize(tempSize);
   });
 
