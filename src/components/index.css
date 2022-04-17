@@ -1,0 +1,55 @@
+/* SplitPane */
+.split-pane {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+.split-pane--vertical {
+  flex-direction: row;
+}
+.split-pane--vertical.split-pane--reverse {
+  flex-direction: row-reverse;
+}
+.split-pane--horizontal {
+  flex-direction: column;
+}
+.split-pane--horizontal.split-pane--reverse {
+  flex-direction: column-reverse;
+}
+
+/* Panel */
+.split-pane .split-pane__panel {
+  position: relative;
+  flex: 0 0 auto;
+  overflow: auto;
+}
+.split-pane .split-pane__panel--primary {
+  flex: 1 1 auto;
+}
+
+/* Resizer */
+.split-pane .split-pane__resizer {
+  display: flex;
+  flex: 0 0 auto;
+  /* border-inline: 5px solid transparent; */
+  /* margin-inline: -5px; */
+  /* padding-inline: 2px; */
+  background: padding-box #bbb;
+  align-self: stretch;
+}
+/* .split-pane .split-pane__resizer::before {
+  content: '';
+  position: absolute;
+  padding-inline: 2px;
+  align-self: stretch;
+} */
+.split-pane .split-pane__resizer--vertical {
+  width: 11px;
+  height: 100%;
+  cursor: col-resize;
+}
+.split-pane .split-pane__resizer--horizontal {
+  width: 100%;
+  height: 11px;
+  cursor: row-resize;
+}
